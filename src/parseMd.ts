@@ -5,12 +5,12 @@ const renderer = {
     html: () => '',
     table: () => '',
     checkbox: () => '',
-    link: () => '',
+    link: (_href: string, _title: string, text: string) => ` <span>${text}</span> `,
     br: () => '',
 };
 
 marked.use({ renderer, mangle: false, headerIds: false });
 
 export const parse = (raw: string) => {
-    return marked.parse(raw);
+    return marked.parseInline(raw);
 }
