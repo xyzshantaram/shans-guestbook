@@ -1,9 +1,9 @@
-// deno-lint-ignore-file no-explicit-any
 import { RateLimiterFlexible, RequestEvent, nhttp, serveStatic } from "./deps.ts";
 import templating, { TemplateResponder } from "./render.ts";
 import { die, randomChoice } from "./utils.ts";
 import captchas from "../captchas.json" assert { type: "json" };
 import { addMessage, getMessages } from "./db.ts";
+import { parse } from "./parseMd.ts";
 
 const limiter = new RateLimiterFlexible.RateLimiterMemory({
     points: 1,
@@ -28,18 +28,27 @@ app.get('/', ({ query, respondWithTpl }) => {
     respondWithTpl('index', { captcha: captcha.question, messages }, { cookie: { id } });
 });
 
-app.post('/', (rev: RequestEvent<Deno.Conn>, next) => {
-    limiter.consume(rev.info.conn.remoteAddr.toString(), 1).then(value => {
-        return next();
-    }).catch(res => {
-        return error(rev.respondWithTpl)(`You can only submit one message every five minutes! You can send another message in ${formatMs(res.msBeforeNext)}`)
-    })
-}, ({ body, respondWithTpl, response }) => {
-    if (!body.captcha) return error(respondWithTpl)('Missing or expired captcha.');
-    if (!body.message || !body.message.trim()) return error(respondWithTpl)('You need to supply a message!');
-    if (body.message.length > 140) return error(respondWithTpl)("Your message was too long.");
+app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
+    const params = new URLSearchParams(await request.text());
 
-    addMessage(body.message, body.name);
+    const captcha = params.get('captcha')?.toLowerCase().trim() || "";
+    const name = params.get('name')?.trim() || "";
+    const message = params.get('message')?.trim() || "";
+
+    if (!captcha || captcha !== captchas[parseInt(cookies.id)].answer) return error(respondWithTpl)('Invalid or expired captcha.');
+    if (!message) return error(respondWithTpl)('You need to supply a message!');
+    if (message.length > 300) return error(respondWithTpl)("Your message was too long.");
+    if (name.length > 100) return error(respondWithTpl)("Name too long.");
+
+    try {
+        await limiter.consume((info.conn.remoteAddr as Deno.NetAddr).hostname, 1);
+    }
+    catch (e: any) {
+        console.log(e);
+        return error(respondWithTpl)(`You can only submit one message every five minutes! You can send another message in ${formatMs(e.msBeforeNext)}`)
+    }
+
+    addMessage(parse(decodeURIComponent(message)), decodeURIComponent(name || ""));
     response.redirect("/");
 });
 
