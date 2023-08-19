@@ -52,7 +52,7 @@ app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
     response.redirect("/");
 });
 
-await app.listen(8000, (err, info) => {
+await app.listen(parseInt(Deno.env.get("PORT") || "8000"), (err, info) => {
     if (err) {
         die(1, `Error: ${err.message}`);
     }
