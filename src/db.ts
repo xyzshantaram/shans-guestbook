@@ -17,7 +17,16 @@ export const getMessages = (page?: number) => {
     let offset = 0;
 
     if (page) offset = limit * page;
-    return getMessageQuery.all({ limit, offset });
+    const result = getMessageQuery.all({ limit, offset });
+
+    return {
+        hasPrev: offset !== 0,
+        hasNext: result.length == limit,
+        result,
+        currentPage: page || 0,
+        nextPage: (page || 0) + 1,
+        prevPage: (page || 1) - 1
+    };
 }
 
 const anonMessageQuery = db.prepare("INSERT INTO messages (message) values (:message)");
