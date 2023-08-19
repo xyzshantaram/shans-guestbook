@@ -1,4 +1,4 @@
-import { RateLimiterFlexible, RequestEvent, nhttp, serveStatic } from "./deps.ts";
+import { RateLimiterFlexible, nhttp, serveStatic } from "./deps.ts";
 import templating, { TemplateResponder } from "./render.ts";
 import { die, randomChoice } from "./utils.ts";
 import captchas from "../captchas.json" assert { type: "json" };
