@@ -1,6 +1,5 @@
 import { Liquid, Merge, NextFunction, RequestEvent, TObject, Template, fs } from "./deps.ts";
-import { die } from "./utils.ts";
-import { parse } from "./parseMd.ts";
+import { die, fmtDate } from "./utils.ts";
 
 class TemplateRenderer {
     #engine: Liquid;
@@ -34,6 +33,7 @@ class TemplateRenderer {
         });
 
         this.init().then(_ => {
+            this.#engine.registerFilter('format_date', fmtDate);
             console.log('Parsed templates successfully.');
         }).catch(e => {
             die(1, "Error initialising templates: ", e);
@@ -42,7 +42,6 @@ class TemplateRenderer {
 
     async init() {
         this.#inited = true;
-        this.#engine.registerFilter('parseMd', parse);
         return await Deno.stat(this.viewPath).then(val => {
             if (!val.isDirectory) throw new Error('View path is not directory');
             for (const file of fs.walkSync(this.viewPath)) {
