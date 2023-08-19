@@ -1,0 +1,73 @@
+{% layout "base.liquid" %}
+
+{% block content %}
+<h1>
+    Hello!
+</h1>
+<p>
+    Leave a note! <strong>**Bold**</strong>, <em>_italics_</em>, and <del>~~strikethrough~~</del> are supported.
+</p>
+
+<h2>Your note</h2>
+
+<form id="add-message-form" method="POST" action="/">
+    <div class="form-group">
+        <label for="poster-name">
+            Your name (optional)
+        </label>
+        <input id="poster-name" type="text" name="name" maxlength="100">
+    </div>
+
+    <div class="sticky-note">
+        <textarea name="message" maxlength="300" placeholder="Type your message..."></textarea>
+    </div>
+
+    <p>
+        Please answer the following question with a single word with only alphabets in it.
+    </p>
+    <div class="form-group">
+        <label for="captcha">
+            <strong>{{ captcha }}</strong>
+        </label>
+        <input id="captcha" name="captcha" type="text" maxlength="100">
+    </div>
+
+    <input class="sticky-note" type="submit" value="Post">
+</form>
+
+<h2>Notes others have left</h2>
+
+{% if messages.result.size == 0 %}
+
+{% if messages.currentPage == 0 %}
+<p>No messages yet. Why not be the first?</p>
+{% else %}
+<p>No messages to show.</p>
+{% endif %}
+
+{% else %}
+<ul class="cards-list">
+    {% for message in messages.result %}
+    <li class="sticky-note" data-message-id="{{ message.rowid }}">
+        <p>{{ message.message }}</p>
+        <div class="metadata">
+            <span>&mdash; {{ message.name }}</span>,
+            <span>{{ message.added_on | format_date }}</span>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+
+<div class="prev-next-wrapper">
+    {% if messages.hasPrev %}
+    <a href="/?page={{ prevPage }}">Previous page</a>
+    {% endif %}
+
+    {% if messages.hasNext %}
+    <a href="/?page={{ nextPage }}">Next page</a>
+    {% endif %}
+</div>
+
+{% endblock %}
