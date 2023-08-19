@@ -1,0 +1,181 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-display: block;
+}
+
+:root {
+    font-size: 18px;
+}
+
+body {
+    background-color: #101010;
+    line-height: 1.6;
+    color: white;
+    display: flex;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-family: 'Edu QLD Beginner', cursive;
+}
+
+.prev-next-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem;
+}
+
+.content {
+    padding: 1rem;
+    max-width: 80ch;
+    border-radius: 0.4rem;
+}
+
+ul.cards-list {
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.sticky-note {
+    border: none;
+    background-color: #fff740;
+    padding-left: 1.5rem;
+    padding-top: 1.5rem;
+    color: #101010;
+    max-width: 30ch;
+    margin: 1rem;
+    padding-bottom: 1rem;
+    padding-right: 1rem;
+    box-shadow: inset 0 40px 4px rgba(0, 0, 0, 0.1), 5px 5px 7px rgba(255, 255, 255, 0.2);
+}
+
+li.sticky-note {
+    min-height: 7rem;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+}
+
+input.sticky-note {
+    font-family: inherit;
+    font-size: 1.5rem;
+    padding-top: 1rem;
+    box-shadow: inset 0 20px 4px rgba(0, 0, 0, 0.1);
+    min-height: 4rem;
+    min-width: 8rem;
+}
+
+.cards-list .sticky-note:first-child {
+    transform: rotate(-3deg);
+    position: relative;
+    top: -5px;
+}
+
+.cards-list .sticky-note:nth-child(even) {
+    transform: rotate(2.5deg);
+    position: relative;
+    top: 5px;
+}
+
+.cards-list .sticky-note:nth-child(3n) {
+    transform: rotate(2deg);
+    position: relative;
+    top: -5px;
+}
+
+.cards-list .sticky-note:nth-child(5n) {
+    transform: rotate(5deg);
+    position: relative;
+    top: -10px;
+}
+
+.sticky-note .metadata {
+    font-size: 1rem;
+    color: gray;
+    text-align: right;
+    margin-top: auto;
+}
+
+.content>p {
+    margin: 2rem;
+}
+
+#add-message-form {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#add-message-form .sticky-note {
+    padding: 1rem;
+}
+
+#add-message-form textarea {
+    background-color: transparent;
+    font-family: inherit;
+    border: none;
+    width: calc(100% - 2rem);
+    resize: none;
+    margin-top: 1.8rem;
+    height: 8rem;
+    font-size: inherit;
+    border-radius: 0.4rem;
+    padding: 1rem;
+}
+
+#add-message-form textarea:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    outline: none;
+}
+
+#add-message-form input[type=text] {
+    font-size: 1.3rem;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid gray;
+    color: inherit;
+    font-family: inherit;
+}
+
+#add-message-form input[type=text]:focus {
+    outline: none;
+    filter: brightness(1.2);
+    border-bottom-color: white;
+}
+
+.form-group {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    min-width: 60ch;
+}
+
+.form-group input[type=text] {
+    margin: 0.5rem;
+    line-height: 1.4rem;
+}
+
+a,
+a:link,
+a:visited,
+a:active {
+    color: inherit;
+}
+
+@media screen and (max-aspect-ratio: 1/1) {
+    ul.cards-list {
+        grid-template-columns: 1fr;
+        place-items: center;
+        gap: 0.2rem;
+        padding: 0;
+    }
+
+    .form-group {
+        min-width: 10ch;
+    }
+}
