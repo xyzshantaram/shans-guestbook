@@ -16,9 +16,15 @@ body {
     line-height: 1.6;
     color: white;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     font-size: 1.4rem;
-    font-family: 'Edu QLD Beginner', cursive;
+}
+
+footer {
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
 .prev-next-wrapper {
@@ -41,6 +47,7 @@ ul.cards-list {
 }
 
 .sticky-note {
+    font-family: 'Edu QLD Beginner', cursive;
     border: none;
     background-color: #fff740;
     padding-left: 1.5rem;
@@ -61,7 +68,6 @@ li.sticky-note {
 }
 
 input.sticky-note {
-    font-family: inherit;
     font-size: 1.5rem;
     padding-top: 1rem;
     box-shadow: inset 0 20px 4px rgba(0, 0, 0, 0.1);
