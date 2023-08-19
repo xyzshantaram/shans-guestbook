@@ -1,5 +1,5 @@
 import { Liquid, Merge, NextFunction, RequestEvent, TObject, Template, fs } from "./deps.ts";
-import { die, slug, deslug } from "./utils.ts";
+import { die } from "./utils.ts";
 import { parse } from "./parseMd.ts";
 
 class TemplateRenderer {
@@ -33,23 +33,29 @@ class TemplateRenderer {
             }
         });
 
-        this.init().then().catch(e => {
+        this.init().then(_ => {
+            console.log('Parsed templates successfully.');
+        }).catch(e => {
             die(1, "Error initialising templates: ", e);
         });
     }
 
     async init() {
         this.#inited = true;
-        this.#engine.registerFilter('slug', slug);
-        this.#engine.registerFilter('deslug', deslug);
         this.#engine.registerFilter('parseMd', parse);
-        return await Deno.stat(this.viewPath).then(async val => {
+        return await Deno.stat(this.viewPath).then(val => {
             if (!val.isDirectory) throw new Error('View path is not directory');
-            for await (const file of fs.walk(this.viewPath)) {
-                if (file.isFile && file.name.endsWith('.liquid')) {
-                    const contents = await Deno.readTextFile(file.path);
-                    this.#src[file.name] = contents;
-                    this.#templates[file.name] = this.#engine.parse(contents);
+            for (const file of fs.walkSync(this.viewPath)) {
+                try {
+                    if (file.isFile && file.name.endsWith('.liquid')) {
+                        const contents = Deno.readTextFileSync(file.path);
+
+                        this.#src[file.name] = contents;
+                        this.#templates[file.name] = this.#engine.parse(contents);
+                    }
+                }
+                catch (e) {
+                    console.log('ERROR', e);
                 }
             }
         })
@@ -71,6 +77,13 @@ export const tplMiddleware = (rev: Merge<RequestEvent<TObject>, unknown>, next: 
         if (options?.status) {
             rev.response.statusCode = options?.status;
         }
+
+        if (options?.cookie) {
+            for (const [key, val] of Object.entries(options.cookie)) {
+                rev.response.cookie(key, val as string, { httpOnly: true });
+            }
+        }
+
         ctx = {
             loggedIn: rev.loggedIn,
             ...ctx
@@ -80,5 +93,5 @@ export const tplMiddleware = (rev: Merge<RequestEvent<TObject>, unknown>, next: 
 
     return next();
 }
-
+export type TemplateResponder = (tpl: string, ctx: Record<string, any>, options?: Record<string, any>) => Promise<void>;
 export default { middleware: tplMiddleware, render };
