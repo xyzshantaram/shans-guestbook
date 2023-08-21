@@ -26,24 +26,31 @@ const getRequestIp = (req: Request) => {
     return req.headers.get('x-real-ip')!;
 }
 
-app.get('/', ({ request, info, query, respondWithTpl }) => {
+app.get('/', ({ request, query, respondWithTpl }) => {
     const [id, captcha] = randomChoice(captchas);
-    console.log(getRequestIp(request), id, captcha);
+    console.log(`Captcha ID for ${getRequestIp(request)} set to ${id}, captcha object:`);
+    console.log(captcha);
     const messages = getMessages(query.page);
 
     respondWithTpl('index', { captcha: captcha.question, messages }, { cookie: { id } });
 });
 
-app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
+app.post('/', async ({ respondWithTpl, response, cookies, request }) => {
     const params = new URLSearchParams(await request.text());
 
     const captcha = params.get('captcha')?.toLowerCase().trim() || "";
-    console.log(getRequestIp(request), cookies.id, captcha);
-    console.log(captcha, captchas[parseInt(cookies.id)]);
     const name = params.get('name')?.trim() || "";
     const message = params.get('message')?.trim() || "";
 
-    if (!captcha || captcha !== captchas[parseInt(cookies.id)].answer) return error(respondWithTpl)('Invalid or expired captcha.');
+    const question = captchas[parseInt(cookies.id)];
+    console.log({
+        IP: getRequestIp(request),
+        theirAnswer: captcha,
+        theAnswer: question.answer,
+        isAnswerCorrect: captcha === question.answer
+    });
+
+    if (!question || !captcha || captcha !== question.answer) return error(respondWithTpl)('Invalid or expired captcha.');
     if (!message) return error(respondWithTpl)('You need to supply a message!');
     if (message.length > 300) return error(respondWithTpl)("Your message was too long.");
     if (name.length > 100) return error(respondWithTpl)("Name too long.");
