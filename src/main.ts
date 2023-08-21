@@ -56,7 +56,8 @@ app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
         return error(respondWithTpl)(`You can only submit one message every five minutes! You can send another message in ${formatMs(e.msBeforeNext)}`)
     }
 
-    addMessage(parse(decodeURIComponent(message)), decodeURIComponent(name || ""));
+    const decoded = decodeURIComponent(message);
+    addMessage(await parse(decoded) || "", decodeURIComponent(name || ""));
     response.redirect("/");
 });
 
