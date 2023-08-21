@@ -22,13 +22,13 @@ const formatMs = (ms: number) => {
 }
 
 
-const getRequestIp = (info: { conn: TObject }) => {
-    return (info.conn.remoteAddr as Deno.NetAddr).hostname;
+const getRequestIp = (req: Request) => {
+    return req.headers.get('x-real-ip')!;
 }
 
-app.get('/', ({ info, query, respondWithTpl }) => {
+app.get('/', ({ request, info, query, respondWithTpl }) => {
     const [id, captcha] = randomChoice(captchas);
-    console.log(getRequestIp(info), id, captcha);
+    console.log(getRequestIp(request), id, captcha);
     const messages = getMessages(query.page);
 
     respondWithTpl('index', { captcha: captcha.question, messages }, { cookie: { id } });
@@ -38,7 +38,7 @@ app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
     const params = new URLSearchParams(await request.text());
 
     const captcha = params.get('captcha')?.toLowerCase().trim() || "";
-    console.log(getRequestIp(info), cookies.id, captcha);
+    console.log(getRequestIp(request), cookies.id, captcha);
     console.log(captcha, captchas[parseInt(cookies.id)]);
     const name = params.get('name')?.trim() || "";
     const message = params.get('message')?.trim() || "";
@@ -49,7 +49,7 @@ app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
     if (name.length > 100) return error(respondWithTpl)("Name too long.");
 
     try {
-        await limiter.consume(getRequestIp(info), 1);
+        await limiter.consume(getRequestIp(request), 1);
     }
     catch (e: any) {
         console.log(e);
