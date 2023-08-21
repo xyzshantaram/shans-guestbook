@@ -1,4 +1,4 @@
-import { RateLimiterFlexible, nhttp, serveStatic } from "./deps.ts";
+import { RateLimiterFlexible, TObject, nhttp, serveStatic } from "./deps.ts";
 import templating, { TemplateResponder } from "./render.ts";
 import { die, randomChoice } from "./utils.ts";
 import captchas from "../captchas.json" assert { type: "json" };
@@ -21,8 +21,14 @@ const formatMs = (ms: number) => {
     return `${Math.floor(inSeconds / 60)} minutes and ${inSeconds % 60} seconds.`;
 }
 
-app.get('/', ({ query, respondWithTpl }) => {
+
+const getRequestIp = (info: { conn: TObject }) => {
+    return (info.conn.remoteAddr as Deno.NetAddr).hostname;
+}
+
+app.get('/', ({ info, query, respondWithTpl }) => {
     const [id, captcha] = randomChoice(captchas);
+    console.log(getRequestIp(info), id, captcha);
     const messages = getMessages(query.page);
 
     respondWithTpl('index', { captcha: captcha.question, messages }, { cookie: { id } });
@@ -32,6 +38,8 @@ app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
     const params = new URLSearchParams(await request.text());
 
     const captcha = params.get('captcha')?.toLowerCase().trim() || "";
+    console.log(getRequestIp(info), cookies.id, captcha);
+    console.log(captcha, captchas[parseInt(cookies.id)]);
     const name = params.get('name')?.trim() || "";
     const message = params.get('message')?.trim() || "";
 
@@ -41,7 +49,7 @@ app.post('/', async ({ respondWithTpl, response, cookies, info, request }) => {
     if (name.length > 100) return error(respondWithTpl)("Name too long.");
 
     try {
-        await limiter.consume((info.conn.remoteAddr as Deno.NetAddr).hostname, 1);
+        await limiter.consume(getRequestIp(info), 1);
     }
     catch (e: any) {
         console.log(e);
