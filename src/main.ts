@@ -7,7 +7,7 @@ import { parse } from "./parseMd.ts";
 
 const limiter = new RateLimiterFlexible.RateLimiterMemory({
     points: 1,
-    duration: 300,
+    duration: 3,
 });
 
 const app = nhttp()
@@ -59,8 +59,7 @@ app.post('/', async ({ respondWithTpl, response, cookies, request }) => {
         await limiter.consume(getRequestIp(request), 1);
     }
     catch (e: any) {
-        console.log(e);
-        return error(respondWithTpl)(`You can only submit one message every five minutes! You can send another message in ${formatMs(e.msBeforeNext)}`)
+        return error(respondWithTpl)(`You can only submit one message every 3 seconds! Try again later.`);
     }
 
     const decoded = decodeURIComponent(message);
