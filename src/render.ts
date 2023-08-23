@@ -33,7 +33,7 @@ class TemplateRenderer {
         });
 
         this.init().then(_ => {
-            this.#engine.registerFilter('format_date', fmtDate);
+            console.log(this.#engine.filters);
             console.log('Parsed templates successfully.');
         }).catch(e => {
             die(1, "Error initialising templates: ", e);
@@ -42,6 +42,7 @@ class TemplateRenderer {
 
     async init() {
         this.#inited = true;
+        this.#engine.registerFilter('format_date', fmtDate);
         return await Deno.stat(this.viewPath).then(val => {
             if (!val.isDirectory) throw new Error('View path is not directory');
             for (const file of fs.walkSync(this.viewPath)) {
