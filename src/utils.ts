@@ -21,5 +21,5 @@ export const fmtDate = (str: string) => {
     const month = months[date.getMonth()];
     const year = date.getFullYear();
 
-    return `at ${hours}:${minutes} on ${month} ${day}, ${year}`;
+    return `${hours}:${minutes}, ${month} ${day}, ${year}`;
 };
