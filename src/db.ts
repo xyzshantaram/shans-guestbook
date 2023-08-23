@@ -33,7 +33,14 @@ const anonMessageQuery = db.prepare("INSERT INTO messages (message) values (:mes
 const namedMessageQuery = db.prepare("INSERT INTO messages (name, message) values (:name, :message)");
 export const addMessage = (message: string, name?: string) => {
     console.log(`Inserting message ${JSON.stringify({ message, name })}. Trimmed name: \`${name?.trim()}\``);
-    const query = name?.trim() ? namedMessageQuery : anonMessageQuery;
-    console.log(`Selected query ${query}`);
-    query.run({ name, message });
+    const params: { name?: string, message: string } = { message };
+
+    const trimmedName = name?.trim() || "";
+    if (trimmedName) {
+        params.name = trimmedName;
+        namedMessageQuery.run(params);
+    }
+    else {
+        anonMessageQuery.run(params);
+    }
 }
