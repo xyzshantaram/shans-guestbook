@@ -51,8 +51,8 @@
     <li class="sticky-note" data-message-id="{{ message.rowid }}" style="--note-color: {{ message.color }}">
         <p>{{ message.message }}</p>
         <div class="metadata">
-            <span>&mdash; {{ message.name }}</span>,
-            <span>{{ message.added_on | format_date }}</span>
+            <div>&mdash; {{ message.name }}</div>
+            <div>{{ message.added_on | format_date }}</div>
         </div>
     </li>
     {% endfor %}
