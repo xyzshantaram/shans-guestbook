@@ -16,12 +16,6 @@ const app = nhttp()
 
 const error = (responder: TemplateResponder) => (message: string) => responder('error', { message }, { status: 400 });
 
-const formatMs = (ms: number) => {
-    const inSeconds = Math.floor(ms / 1000);
-    return `${Math.floor(inSeconds / 60)} minutes and ${inSeconds % 60} seconds.`;
-}
-
-
 const getRequestIp = (req: Request) => {
     return req.headers.get('x-real-ip')!;
 }
@@ -46,7 +40,7 @@ app.post('/', async ({ respondWithTpl, response, cookies, request }) => {
     console.log({
         IP: getRequestIp(request),
         theirAnswer: captcha,
-        theAnswer: question.answer,
+        theAnswer: question?.answer,
         isAnswerCorrect: captcha === question.answer
     });
 

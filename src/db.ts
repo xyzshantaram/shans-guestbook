@@ -32,5 +32,6 @@ export const getMessages = (page?: number) => {
 const anonMessageQuery = db.prepare("INSERT INTO messages (message) values (:message)");
 const namedMessageQuery = db.prepare("INSERT INTO messages (name, message) values (:name, :message)");
 export const addMessage = (message: string, name?: string) => {
+    console.log(`Inserting message ${JSON.stringify({ message, name })}`);
     (name?.trim() ? namedMessageQuery : anonMessageQuery).run({ name, message });
 }
