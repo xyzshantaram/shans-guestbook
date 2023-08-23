@@ -101,7 +101,7 @@ input.sticky-note {
 
 .sticky-note .metadata {
     font-size: 1rem;
-    color: gray;
+    color: #404040;
     text-align: right;
     margin-top: auto;
 }
