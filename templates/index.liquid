@@ -48,7 +48,7 @@
 {% else %}
 <ul class="cards-list">
     {% for message in messages.result %}
-    <li class="sticky-note" data-message-id="{{ message.rowid }}" style="--note-color: {{ message.color }}">
+    <li class="sticky-note" data-message-id="{{ message.rowid }}" style="background-color: {{ message.color }}">
         <p>{{ message.message }}</p>
         <div class="metadata">
             <div>&mdash; {{ message.name }}</div>
