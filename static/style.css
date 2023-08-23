@@ -42,18 +42,18 @@ footer {
 ul.cards-list {
     list-style-type: none;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1rem;
 }
 
 .sticky-note {
     font-family: 'Edu QLD Beginner', cursive;
     border: none;
-    background-color: #fff740;
+    background-color: var(--note-color, #fff740);
     padding-left: 1.5rem;
     padding-top: 1.5rem;
     color: #101010;
-    max-width: 30ch;
+    max-width: 20ch;
     margin: 1rem;
     padding-bottom: 1rem;
     padding-right: 1rem;

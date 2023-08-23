@@ -10,7 +10,7 @@ const INIT_STATEMENTS = [
 const db = new Database('./guestbook.db');
 INIT_STATEMENTS.forEach(stmt => db.exec(stmt));
 
-const getMessageQuery = db.prepare("SELECT rowid, name, message, added_on FROM messages LIMIT :limit OFFSET :offset");
+const getMessageQuery = db.prepare("SELECT rowid, name, message, color, added_on FROM messages LIMIT :limit OFFSET :offset");
 
 export const getMessages = (page?: number) => {
     const limit = 50;
@@ -29,11 +29,11 @@ export const getMessages = (page?: number) => {
     };
 }
 
-const anonMessageQuery = db.prepare("INSERT INTO messages (message) values (:message)");
-const namedMessageQuery = db.prepare("INSERT INTO messages (name, message) values (:name, :message)");
-export const addMessage = (message: string, name?: string) => {
-    console.log(`Inserting message ${JSON.stringify({ message, name })}. Trimmed name: \`${name?.trim()}\``);
-    const params: { name?: string, message: string } = { message };
+const anonMessageQuery = db.prepare("INSERT INTO messages (message, color) values (:message, :color)");
+const namedMessageQuery = db.prepare("INSERT INTO messages (name, message, color) values (:name, :message, :color)");
+export const addMessage = (message: string, color: string, name?: string) => {
+    console.log(`Inserting message ${JSON.stringify({ color, message, name })}.`);
+    const params: { name?: string, message: string, color: string } = { message, color };
 
     const trimmedName = name?.trim() || "";
     if (trimmedName) {

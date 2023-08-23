@@ -2,6 +2,7 @@ import { RateLimiterFlexible, TObject, nhttp, serveStatic } from "./deps.ts";
 import templating, { TemplateResponder } from "./render.ts";
 import { die, randomChoice } from "./utils.ts";
 import captchas from "../captchas.json" assert { type: "json" };
+import colors from "../colors.json" assert { type: "json" };
 import { addMessage, getMessages } from "./db.ts";
 import { parse } from "./parseMd.ts";
 
@@ -57,7 +58,8 @@ app.post('/', async ({ respondWithTpl, response, cookies, request }) => {
     }
 
     const decoded = decodeURIComponent(message);
-    addMessage(await parse(decoded) || "", decodeURIComponent(name || ""));
+    const [_, color] = randomChoice(colors);
+    addMessage(await parse(decoded) || "", color, decodeURIComponent(name || ""));
     response.redirect("/");
 });
 
