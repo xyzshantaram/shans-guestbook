@@ -19,7 +19,7 @@
     </div>
 
     <div class="sticky-note">
-        <textarea name="message" maxlength="300" placeholder="Type your message..."></textarea>
+        <textarea required name="message" maxlength="300" placeholder="Type your message..."></textarea>
     </div>
 
     <p>
@@ -29,7 +29,7 @@
         <label for="captcha">
             <strong>{{ captcha }}</strong>
         </label>
-        <input id="captcha" name="captcha" type="text" maxlength="100">
+        <input required id="captcha" name="captcha" type="text" maxlength="100">
     </div>
 
     <input class="sticky-note" type="submit" value="Post">
