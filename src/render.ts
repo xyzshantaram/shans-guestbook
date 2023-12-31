@@ -33,7 +33,6 @@ class TemplateRenderer {
         });
 
         this.init().then(_ => {
-            console.log(this.#engine.filters);
             console.log('Parsed templates successfully.');
         }).catch(e => {
             die(1, "Error initialising templates: ", e);

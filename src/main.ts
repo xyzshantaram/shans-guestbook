@@ -1,4 +1,4 @@
-import { RateLimiterFlexible, TObject, nhttp, serveStatic } from "./deps.ts";
+import { RateLimiterFlexible, nhttp, serveStatic } from "./deps.ts";
 import templating, { TemplateResponder } from "./render.ts";
 import { die, randomChoice } from "./utils.ts";
 import captchas from "../captchas.json" assert { type: "json" };
@@ -21,10 +21,8 @@ const getRequestIp = (req: Request) => {
     return req.headers.get('x-real-ip')!;
 }
 
-app.get('/', ({ request, query, respondWithTpl }) => {
+app.get('/', ({ query, respondWithTpl }) => {
     const [id, captcha] = randomChoice(captchas);
-    console.log(`Captcha ID for ${getRequestIp(request)} set to ${id}, captcha object:`);
-    console.log(captcha);
     const messages = getMessages(query.page);
 
     respondWithTpl('index', { captcha: captcha.question, messages }, { cookie: { id } });
@@ -54,6 +52,7 @@ app.post('/', async ({ respondWithTpl, response, cookies, request }) => {
         await limiter.consume(getRequestIp(request), 1);
     }
     catch (e: any) {
+        console.error(e);
         return error(respondWithTpl)(`You can only submit one message every 3 seconds! Try again later.`);
     }
 
@@ -67,6 +66,7 @@ await app.listen(parseInt(Deno.env.get("PORT") || "8000"), (err, info) => {
     if (err) {
         die(1, `Error: ${err.message}`);
     }
-
-    console.info(`Running on port ${info.port}`);
+    else {
+        console.info(`Running on port ${info.port}`);
+    }
 });
